@@ -13,10 +13,10 @@ public class MeleeController : MonoBehaviour
     [SerializeField]
     float damage;
 
-    //1. CORTAR Y HACER LAS ANIMACIONES DE IDLE, WALK, ATTACK, DIE DEL NUEVO SPRITE SHEET (25 PUNTOS)
-    //2. AGREGAR ATTACK TIMES PER SECOND (25 PUNTOS)
+    [SerializeField]
+    float attackCooldown;
 
-
+    bool canAttack = true;
     Animator animator;
 
     void Awake()
@@ -26,9 +26,11 @@ public class MeleeController : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetButtonDown("Fire1"))
+        if (Input.GetButtonDown("Fire1") && canAttack)
         {
             animator.SetTrigger("melee");
+            canAttack = false;
+            Invoke("ResetAttack", attackCooldown);
         }
     }
 
@@ -42,7 +44,7 @@ public class MeleeController : MonoBehaviour
     {
         Collider2D[] colliders = Physics2D.OverlapCircleAll(attackPoint.position, attackRadius);
 
-        foreach(Collider2D collider in colliders)
+        foreach (Collider2D collider in colliders)
         {
             HealthController healthController = collider.GetComponent<HealthController>();
             if (healthController != null)
@@ -52,5 +54,9 @@ public class MeleeController : MonoBehaviour
         }
     }
 
-    
+    void ResetAttack()
+    {
+        canAttack = true;
+    }
 }
+
